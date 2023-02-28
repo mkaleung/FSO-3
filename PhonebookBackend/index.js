@@ -24,7 +24,7 @@ let persons = [
   }
 ]
 
-app.get('/api/persons', (request,response) => {
+app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
 
@@ -41,8 +41,19 @@ const generateInfoPage = (persons) => {
   )
 }
 
-app.get('/info', (request,response) => {
+app.get('/info', (request, response) => {
   response.send(generateInfoPage(persons))
+})
+
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = persons.find(p => p.id === id)
+
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
 })
 
 const PORT = 3001
