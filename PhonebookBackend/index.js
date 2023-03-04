@@ -2,33 +2,23 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-// const cors = require('cors')
 const Person = require('./models/person')
 
-// if (process.argv.length === 5) {
-//   const name = process.argv[3]
-//   const number = process.argv[4]
-
-//   const person = new Person({
-//     name: name,
-//     number: number,
-//   })
-
-//   person.save().then(result => {
-//     console.log (`added ${name} number ${number} to phonebook`)
-//     mongoose.connection.close()
-//   })
-// }
-
-// Person.find({}).then(result => {
-
-// })
-// app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 
 morgan.token('body', req => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+}
+//This has to be the last loaded middleware
+app.use(errorHandler)
 
 let persons = [
   { 
@@ -76,21 +66,24 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => {
-      console.log(person)
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
-  })
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error)) 
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(p => p.id !== id)
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 
-  response.status(204).end()
 })
 
 // const generateId = () => {
