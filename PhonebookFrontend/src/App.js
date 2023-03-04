@@ -134,7 +134,7 @@ const App = () => {
       <ul>
         {contactsToShow(filterName).map(person => 
           <Person 
-            key={person.name}
+            key={person.id}
             person={person}
             deletePerson={() => deletePerson(person.id)}
           />
