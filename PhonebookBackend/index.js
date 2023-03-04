@@ -61,9 +61,9 @@ const generateInfoPage = (persons) => {
   )
 }
 
-app.get('/info', (request, response) => {
-  response.send(generateInfoPage(persons))
-})
+app.get('/info', (request, response) => 
+  Person.find({}).then(people => response.send(generateInfoPage(people)))
+)
 
 app.get('/api/persons/:id', (request, response) => {
   Person.findById(request.params.id)
