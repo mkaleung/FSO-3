@@ -92,17 +92,26 @@ app.delete('/api/persons/:id', (request, response, next) => {
 //   return randomId
 // }
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+})
+
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  
-//To Do
-  if (!body.name || !body.number) {
-    return response.status(400).json({error: 'name or number missing'})
-  }
-
-  if (persons.find(p => p.name === body.name)) {
-    return response.status(400).json({error: 'name must be unique'})
+  if (body.content === undefined) {
+    return response.status(400).json({ error: 'content missing' })
   }
 
   const person = new Person({
