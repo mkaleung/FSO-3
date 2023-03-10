@@ -42,6 +42,9 @@ const App = () => {
             setNewName('')
             setNewNumber('')
           })
+          .catch(error => {
+            setMessage([error.response.data.error, 'negative'])
+          })
       }
     } else if (personExists) {
         return alert(`${newName} is already added to the phonebook`)
@@ -63,6 +66,9 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+      })
+      .catch(error => {
+        setMessage([error.response.data.error, 'negative'])
       })
   }
 
