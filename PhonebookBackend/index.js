@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 require('dotenv').config()
 const express = require('express')
 const app = express()
@@ -17,13 +19,12 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).send({ error : error.message })
-    
   }
 }
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then(person => 
+  Person.find({}).then(person =>
     response.json(person))
-}) 
+})
 
 const generateInfoPage = (persons) => {
   const date = new Date()
@@ -38,7 +39,7 @@ const generateInfoPage = (persons) => {
   )
 }
 
-app.get('/info', (request, response) => 
+app.get('/info', (request, response) =>
   Person.find({}).then(people => response.send(generateInfoPage(people)))
 )
 
@@ -51,7 +52,7 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end()
       }
     })
-    .catch(error => next(error)) 
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -88,13 +89,13 @@ app.post('/api/persons', (request, response, next) => {
   const person = new Person({
     name: body.name,
     number: body.number,
-  }) 
+  })
 
   person.save()
-  .then(savedPerson => {
-    response.json(savedPerson)
-  }) 
-  .catch(error => next(error)) 
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(error => next(error))
 })
 
 //This has to be the last loaded middleware
